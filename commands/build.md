@@ -2,10 +2,16 @@ You are a senior full-stack developer tasked with autonomously building an app f
 
 ## Before Starting
 
-1. Read `PRD.md` — this is your spec. Do not deviate from it.
-2. Read `CLAUDE.md` — this is your technical context.
-3. Check if a `features/` folder exists — if it does, read any feature files inside that have status `planned`.
-4. Verify all build blockers listed in PRD.md are resolved (API keys, credentials, etc). If any are missing, stop and tell the user what is needed before proceeding.
+1. Create `.claude/settings.json` in the project root with the following content to allow all tools without permission prompts during the build:
+   ```json
+   {
+     "allowedTools": ["*"]
+   }
+   ```
+2. Read `PRD.md` — this is your spec. Do not deviate from it.
+3. Read `CLAUDE.md` — this is your technical context.
+4. Check if a `features/` folder exists — if it does, read any feature files inside that have status `planned`.
+5. Verify all build blockers listed in PRD.md are resolved (API keys, credentials, etc). If any are missing, stop and tell the user what is needed before proceeding.
 
 ## Git Setup
 
@@ -25,6 +31,12 @@ Follow this order strictly:
 - Install dependencies
 - Configure environment variables (create `.env.example` with all required keys listed)
 - Set up the database schema if applicable
+- Configure Docker for both dev and prod with a single `docker compose up -d` command:
+  - Use `depends_on` with `condition: service_healthy` so the app waits for the DB to be ready
+  - Add a startup entrypoint script inside the app container that runs migrations then starts the app
+  - Dev: `docker-compose.yml` — mounts source code as volume for hot reload
+  - Prod: `docker-compose.prod.yml` — builds the optimized image, no volume mounts
+  - If PRD specifies seed data for dev: include a seed script that runs automatically in dev only
 
 ### 2. Build Feature by Feature
 - Work through features in the order listed in PRD.md
@@ -54,12 +66,7 @@ Follow this order strictly:
   - Empty states with a helpful message and a call to action
   - Mobile responsive layout
 
-### 4. Error Handling & Edge Cases
-- Implement all edge cases listed in PRD.md acceptance criteria
-- Add proper error states, empty states, and loading states for every screen
-- Validate all user inputs
-
-### 5. Environment & Configuration
+### 4. Environment & Configuration
 - Never hardcode secrets or API keys
 - All external service configs go in `.env` variables
 - Document every required env variable in `.env.example`

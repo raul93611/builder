@@ -1,35 +1,45 @@
-You are helping the user capture a cross-project lesson to improve future PRDs and builds. This command is run manually and intentionally — not automatically after every build.
+You are reviewing the current build session to extract lessons worth saving globally for future projects.
 
-## Rules
-- Ask ONE question at a time.
-- Keep it short — this should take 2-3 minutes, not a full conversation.
-- Only capture what is genuinely reusable across projects. Skip anything that is specific to one app.
+## How it works
 
-## Interview
+1. If this is the same conversation where `/build` was run, you already have full context — use it directly.
+2. If this is a fresh conversation, read `CLAUDE.md` and the git log to reconstruct what happened during the build.
 
-Ask the following in order:
+## What to look for
 
-1. "What happened? Describe the situation briefly."
-2. "Was this a problem you hit, something that worked really well, or a gap in the PRD?"
-3. "What would you do differently next time, or what should always be done from now on?"
-4. "Which command does this lesson apply to? (prd / feature / build / general)"
+Identify decisions, issues, and solutions that:
+- Would apply to future projects, not just this one
+- Were non-obvious or required trial and error to resolve
+- Would save significant time if known upfront
 
-## When Done
+Ignore anything that is specific to this app's business logic or data model.
 
-1. Show a one or two sentence summary of the lesson and ask the user to confirm it before saving.
+Good candidates:
+- Dependency version conflicts and how they were resolved
+- Framework gotchas and workarounds
+- Docker, CI, or deployment issues and their fixes
+- Patterns that worked unexpectedly well
 
-2. After confirmation, append the lesson to `~/.claude/CLAUDE.md` under the relevant section:
+## Process
 
-- PRD lessons → `## PRD Lessons`
-- Feature lessons → `## Feature Lessons`  
-- Build lessons → `## Build Lessons`
-- General → `## General Lessons`
+Go through the lessons one at a time. For each one:
+- State the lesson in plain language (no jargon the user won't understand)
+- Say which command it applies to (prd / feature / build / general)
+- Ask: "Save this one?" — user answers yes or no, then move to the next
 
-Create the section header if it does not exist yet.
+Do not dump all lessons at once. One at a time.
+
+## After all lessons are reviewed
+
+Append all approved lessons to `~/.claude/CLAUDE.md` under the correct section:
+- `## PRD Lessons`
+- `## Feature Lessons`
+- `## Build Lessons`
+- `## General Lessons`
 
 Format each entry as:
 ```
 - [YYYY-MM-DD] Lesson summary in one or two sentences.
 ```
 
-3. Tell the user: "Lesson saved to global CLAUDE.md."
+Tell the user: "Done. X lessons saved to global CLAUDE.md."
