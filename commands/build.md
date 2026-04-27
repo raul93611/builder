@@ -11,15 +11,16 @@ You are a senior full-stack developer tasked with autonomously building an app f
 2. Read `PRD.md` — this is your spec. Do not deviate from it.
 3. Read `CLAUDE.md` — this is your technical context.
 4. Check if a `features/` folder exists — if it does, read any feature files inside that have status `planned`.
-5. Verify all build blockers listed in PRD.md are resolved (API keys, credentials, etc). If any are missing, stop and tell the user what is needed before proceeding.
+5. Check if a `bugs/` folder exists — if it does, read any bug files inside that have status `planned`.
+6. Verify all build blockers listed in PRD.md are resolved (API keys, credentials, etc). If any are missing, stop and tell the user what is needed before proceeding.
 
 ## Git Setup
 
 - Check if a `main` branch exists. If not, initialize it.
-- Create a new branch for this build:
+- Create a single branch for this build based on what is being done:
   - Full app build: `build/initial`
-  - Feature addition: `feature/feature-name` (use the feature name from the feature file)
-  - Bug fix: `fix/description`
+  - One or more features (with or without bugs): `feature/feature-name` (use the first feature's name)
+  - Only bugs (no features): `fix/bugs-batch`
 - All work happens on this branch. Never commit directly to main.
 
 ## Build Process
@@ -38,7 +39,16 @@ Follow this order strictly:
   - Prod: `docker-compose.prod.yml` — builds the optimized image, no volume mounts
   - If PRD specifies seed data for dev: include a seed script that runs automatically in dev only
 
-### 2. Build Feature by Feature
+### 2. Fix Bugs First (if any)
+- If `bugs/` contains files with status `planned`, fix them all before touching features.
+- For each bug follow the TDD cycle:
+  1. **Write a failing test** that reproduces the bug.
+  2. **Confirm it fails** in the way the bug describes.
+  3. **Fix the code** until the test passes.
+  4. **Commit** — fix code + test together: `fix: [bug name]`
+- Update each bug file's status to `fixed` after the commit.
+
+### 3. Build Features
 - Work through features in the order listed in PRD.md
 - For each feature follow the TDD cycle strictly:
   1. **Write the unit test first** — based on the acceptance criteria in PRD.md. Test must cover the core logic, expected outputs, and key edge cases.
@@ -51,7 +61,7 @@ Follow this order strictly:
 - Unit tests cover: API routes, data queries, validations, business logic, data transformations.
 - Do not write unit tests for UI components — those are covered by Playwright E2E in `/test`.
 
-### 3. UI Standards
+### 4. UI Standards
 - Use shadcn/ui components unless PRD specifies otherwise
 - Use Tailwind CSS for all styling
 - Follow the screen inventory described in PRD.md
@@ -66,13 +76,14 @@ Follow this order strictly:
   - Empty states with a helpful message and a call to action
   - Mobile responsive layout
 
-### 4. Environment & Configuration
+### 5. Environment & Configuration
 - Never hardcode secrets or API keys
 - All external service configs go in `.env` variables
 - Document every required env variable in `.env.example`
 
 ## Commit Strategy
 - Commit after each completed feature: `feat: add [feature name]`
+- Commit after each fixed bug: `fix: [bug name]`
 - Commit schema changes separately: `chore: update database schema`
 - Commit config changes separately: `chore: setup [tool/service]`
 - Write clear, descriptive commit messages
@@ -94,6 +105,7 @@ Follow this order strictly:
 3. Clean up spec files — they have been consumed and their content is now in `CLAUDE.md`:
    - Delete `PRD.md`
    - Delete all files inside `features/` that have status `built`
+   - Delete all files inside `bugs/` that have status `fixed`
 
 4. Do NOT push to main. Leave the branch ready for review.
 
