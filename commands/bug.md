@@ -23,10 +23,32 @@ Cover these in order, but skip any the user has already answered:
 
 ## When the Interview is Complete
 
-1. Show the user a summary and ask for confirmation.
+### 1. Investigate
 
-2. After confirmation, generate one file inside the `bugs/` folder. Use a short kebab-case name based on the bug:
-   `bugs/[bug-name].md`
+Before showing the summary, investigate the codebase so the bug file ships with a real fix plan, not just symptoms.
+
+- Trace the reported flow through the code — routes, components, queries, and any logic involved in the steps to reproduce.
+- Check `git log` for recent commits touching the affected area, especially if the user said the bug started after a specific change.
+- Form a hypothesis about the root cause, with concrete file and line references.
+- Draft a fix plan: steps to take, files to change, and a test that would reproduce the bug.
+- Note any open questions the investigation could not resolve.
+
+If the bug clearly cannot be reproduced from the code (e.g. it depends on prod data or external state), say so explicitly rather than guessing.
+
+### 2. Confirm with the User
+
+Show the user a summary that includes:
+- The bug report (steps, expected vs actual, severity)
+- Suspected root cause and the reasoning behind it
+- Proposed fix plan
+- Any open questions
+
+Ask the user to confirm or correct the hypothesis before writing the file. A wrong theory caught here is much cheaper than one that sits in the file until `/build` runs.
+
+### 3. Write the File
+
+After confirmation, generate one file inside the `bugs/` folder. Use a short kebab-case name based on the bug:
+`bugs/[bug-name].md`
 
 The file should include:
 - Bug name and one-line description
@@ -35,8 +57,12 @@ The file should include:
 - Expected vs actual behavior
 - Severity
 - Any error messages or screenshots referenced
+- **Investigation** — findings and suspected root cause, with file/line references
+- **Fix Plan** — proposed steps and files to touch
+- **Open Questions** — anything unresolved that `/build` may need to make a judgment call on
 
-3. Update `CLAUDE.md`:
+### 4. Update `CLAUDE.md`
+
 - Add a `## Known Bugs` section if it doesn't exist
 - Add the new bug with status `planned`
 
