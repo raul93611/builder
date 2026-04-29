@@ -80,4 +80,17 @@ A technical context file for future Claude sessions including:
 - Feature inventory (short list, each with status: planned / built / in-progress)
 - Known constraints or important notes
 
-Tell the user: "PRD.md and CLAUDE.md have been written. Run /build when you are ready to start building."
+3. After the files are written, print a curated **Claude Design prompt** directly to the chat — do not save it to a file. This prompt is for the user to copy and paste into a fresh Claude Design session, since Claude Code cannot talk to Claude Design directly.
+
+   Include only design-load-bearing details from the PRD:
+   - Brand colors (primary and accent)
+   - User types, one line each
+   - Screen inventory — for each screen, what is on it and what the user does there
+   - Key interactions per screen (one sentence each)
+   - Any tone or feel descriptors the user gave (e.g. "minimal and trustworthy", "playful")
+
+   Skip stack choices, data model, build blockers, edge cases, and acceptance criteria — Claude Design does not need them and they dilute the design intent.
+
+   End the prompt with a hand-off note to the user: "If you have an existing codebase or Figma file you want to match for visual consistency, attach it to the Claude Design conversation alongside this prompt."
+
+4. Tell the user: "PRD.md and CLAUDE.md have been written. The Claude Design prompt above is for you to copy and paste into a new Claude Design session. When the design is ready, run /build and paste the Claude Design handoff snippet when prompted."

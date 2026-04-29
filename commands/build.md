@@ -16,6 +16,10 @@ You are a senior full-stack developer tasked with autonomously building an app f
 4. Check if a `features/` folder exists — if it does, read any feature files inside that have status `planned`.
 5. Check if a `bugs/` folder exists — if it does, read any bug files inside that have status `planned`.
 6. Verify all build blockers listed in PRD.md are resolved (API keys, credentials, etc). If any are missing, stop and tell the user what is needed before proceeding.
+7. Ask the user (optional, one prompt only): "Do you have a Claude Design handoff for this build? Paste the full handoff snippet now, or press enter to skip."
+   - **If skipped:** proceed normally — UI is built from the screen descriptions and brand colors in PRD.md.
+   - **If pasted:** treat the snippet as authoritative for visual design. Follow its instructions to fetch the linked bundle, read its README, and inspect the file referenced on the `Implement:` line. The Claude Design URL points to a bundle that exceeds the WebFetch size cap (~10 MB), so when WebFetch fails with a size error, fall back to `curl` via Bash to download the README and the implement-target file to a temp directory, then read them with the Read tool.
+   - **Rule when PRD.md and the Claude Design handoff disagree on visual details:** PRD owns *what screens exist and what they do*; Claude Design owns *how they look*. Defer to the design bundle for layout, spacing, typography, and color application; defer to PRD for logic and flow.
 
 ## Git Setup
 
@@ -65,6 +69,9 @@ Follow this order strictly:
 - Do not write unit tests for UI components — those are covered by Playwright E2E in `/test`.
 
 ### 4. UI Standards
+
+If a Claude Design handoff was provided in step 7 of the pre-flight, it takes precedence over PRD.md and the defaults below for **visual** decisions — component layout, spacing, typography, color application, micro-interactions. Use the rules below as fallbacks for anything the design bundle does not specify.
+
 - Use shadcn/ui components unless PRD specifies otherwise
 - Use Tailwind CSS for all styling
 - Follow the screen inventory described in PRD.md

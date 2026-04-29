@@ -63,4 +63,14 @@ The file should include:
 3. Update `CLAUDE.md`:
 - Add the new feature to the feature inventory with status `planned`
 
-Tell the user: "Feature file has been written. Run /build when you are ready to build this feature."
+4. After the file and `CLAUDE.md` are updated, print a focused **Claude Design prompt** directly to the chat — do not save it to a file. The user will paste it into their existing Claude Design project so it inherits the design system already loaded there.
+
+   Keep this one tight, since the brand and design system are already established:
+   - One opening line: "This is a feature being added to an existing app — apply the loaded design system."
+   - The new or changed screens: what is on them, what the user does, where they fit in the existing navigation
+   - The user flow as bullet points
+   - Any UI-specific edge cases that affect layout (empty states, error states, loading states)
+
+   Skip data model changes, external dependencies, and acceptance criteria — design does not need them.
+
+5. Tell the user: "Feature file has been written. The Claude Design prompt above is for you to paste into your existing Claude Design project. When the design is ready, run /build and paste the Claude Design handoff snippet when prompted."
