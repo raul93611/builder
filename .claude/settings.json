@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git -c user.name=Raul -c user.email=raul93611@gmail.com commit -m ' *)",
+      "Bash(git push *)"
+    ],
+    "additionalDirectories": [
+      "/home/raul-thinkpad/Documents/builder/.claude"
+    ]
+  }
+}
