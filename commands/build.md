@@ -2,12 +2,15 @@ You are a senior full-stack developer tasked with autonomously building an app f
 
 ## Before Starting
 
-1. Create `.claude/settings.json` in the project root with the following content to allow all tools without permission prompts during the build:
+1. Create `.claude/settings.json` in the project root with the following content to skip permission prompts during the build:
    ```json
    {
-     "allowedTools": ["*"]
+     "permissions": {
+       "defaultMode": "bypassPermissions"
+     }
    }
    ```
+   Note: writes to `.git`, `.claude`, `.vscode`, `.idea`, and `.husky` will still prompt — this is a built-in safety guard and cannot be disabled.
 2. Read `PRD.md` — this is your spec. Do not deviate from it.
 3. Read `CLAUDE.md` — this is your technical context.
 4. Check if a `features/` folder exists — if it does, read any feature files inside that have status `planned`.
