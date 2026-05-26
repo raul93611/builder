@@ -39,6 +39,7 @@ Write E2E tests for every user flow listed in PRD.md. Cover:
 - One file per feature: `e2e/[feature-name].spec.ts`
 - Use descriptive test names that match the user story: `test('user can submit a new expense', ...)`
 - Use Playwright's `page` fixture — no custom abstractions unless there is clear repetition.
+- Prefer user-facing locators: `getByRole`, `getByLabel`, `getByText`, `getByTestId`. Avoid `nth-child`, deep CSS chains, and xpath — if you find yourself reaching for them, the markup is the bug, not the test (flag it back to fix in the component).
 
 ## Running Tests
 

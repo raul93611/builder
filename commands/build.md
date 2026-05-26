@@ -62,11 +62,11 @@ Follow this order strictly:
   2. **Run the test** — confirm it fails (Red). If it passes before any code is written, the test is wrong — fix it.
   3. **Build the backend logic** — API routes, database queries, business logic — enough to make the test pass.
   4. **Run the test again** — confirm it passes (Green).
-  5. **Build the UI** — connect the frontend to the backend logic just built.
+  5. **Build the UI + write component unit tests** — connect the frontend to the backend logic. Test that each component renders, reflects props, handles state changes, and fires event handlers correctly. Cover loading, error, and empty states.
   6. **Commit** — feature code + tests together: `feat: add [feature name]`
 
-- Unit tests cover: API routes, data queries, validations, business logic, data transformations.
-- Do not write unit tests for UI components — those are covered by Playwright E2E in `/test`.
+- Unit tests cover: API routes, data queries, validations, business logic, data transformations, UI components (render, props, state, handlers, conditional states).
+- E2E coverage (full user journeys across screens) is added later by `/test` when needed — not all projects run it, so unit coverage on UI components must stand on its own.
 
 ### 4. UI Standards
 
@@ -85,6 +85,10 @@ If a Claude Design handoff was provided in step 7 of the pre-flight, it takes pr
   - Smooth transitions on state changes (150-200ms)
   - Empty states with a helpful message and a call to action
   - Mobile responsive layout
+- Testable markup — so Playwright (and unit tests) can locate elements without brittle selectors:
+  - Real semantic elements: `<button>`, `<a>`, `<form>`, `<label htmlFor>` paired with `<input id>`
+  - `data-testid` on anything not naturally addressable: cards, list rows, modals, status badges, toasts
+  - List items uniquely addressable — `data-testid` includes the row's id, or each item has distinct visible text
 
 ### 5. Environment & Configuration
 - Never hardcode secrets or API keys
