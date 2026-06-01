@@ -54,7 +54,8 @@ After writing all tests:
 ## When Tests are Complete
 
 1. Update `CLAUDE.md`:
-   - Add a `## Test Coverage` section listing which flows are covered by E2E tests.
+   - Add or refresh a `## Test Coverage` section listing which flows are covered by E2E tests — a compact bullet list, one line per flow. If the section already exists, rewrite it in place rather than appending a second copy.
+   - `CLAUDE.md` loads into every session, so keep it lean — target the whole file under ~200 lines / ~12k characters. If it's already over, condense it (or run `/tidy`) instead of growing it.
 
 2. Report to the user:
    - How many tests were written and how many passed

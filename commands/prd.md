@@ -78,13 +78,15 @@ A complete product requirements document including:
 - **Decisions** — every choice the user made between options, plus every "you decide" call, as plain-English bullets with one line of reasoning. Example: `Auth: email + password — chose over social login because user wants to ship fast.`
 
 ### CLAUDE.md
-A technical context file for future Claude sessions including:
+A technical context file for future Claude sessions. **Keep it lean from day one** — this file loads into context at the start of every future session, so its size costs performance on every request. Target **under ~200 lines / ~12k characters**, and favour short high-signal bullets over prose. Include:
 - What this app is (2-3 sentences)
 - Stack with versions where known
-- Project structure (to be filled after scaffolding)
-- Key conventions and decisions made during PRD
-- Feature inventory (short list, each with status: planned / built / in-progress)
+- Project structure (to be filled after scaffolding — a concise tree, not a full file listing)
+- Key conventions and decisions made during PRD (the non-obvious ones only)
+- Feature inventory (short list, each with status: planned / built / in-progress — one line each)
 - Known constraints or important notes
+
+Later commands keep this file under budget as the project grows; if it ever drifts over, `/tidy` trims it back.
 
 3. After the files are written, print a curated **Claude Design prompt** directly to the chat — do not save it to a file. This prompt is for the user to copy and paste into a fresh Claude Design session, since Claude Code cannot talk to Claude Design directly.
 

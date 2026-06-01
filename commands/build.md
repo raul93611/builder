@@ -104,10 +104,11 @@ If a Claude Design handoff was provided in step 7 of the pre-flight, it takes pr
 
 ## When Build is Complete
 
-1. Update `CLAUDE.md`:
-   - Fill in the actual project structure
-   - Update feature inventory — mark all built features as `built`
-   - Add any important implementation notes or decisions made during build
+1. Update `CLAUDE.md` — and keep it lean. It loads into context at the start of every future session, so its size costs performance on every request. Target **under ~200 lines / ~12k characters**.
+   - Fill in the actual project structure — a concise tree, not an exhaustive file listing.
+   - Update feature inventory — mark all built features as `built`, one line each, no essay.
+   - Add only implementation notes that aren't obvious from the code: non-obvious decisions, gotchas, active constraints. Skip anything a developer would learn just by reading the file it describes.
+   - If `CLAUDE.md` is already over target when you open it (common on long-running projects), consolidate it back under target as part of this step — merge stale notes, drop detail for code that now speaks for itself — or run `/tidy` first. Never leave it bigger than you found it without a reason.
 
 2. Generate `DEPLOYMENT.md` with production setup instructions based on the stack used:
    - Environment variables required (reference `.env.example`)

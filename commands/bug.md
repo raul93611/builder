@@ -63,7 +63,9 @@ The file should include:
 
 ### 4. Update `CLAUDE.md`
 
-- Add a `## Known Bugs` section if it doesn't exist
-- Add the new bug with status `planned`
+- Add a `## Known Bugs` section if it doesn't exist.
+- Add the new bug with status `planned` — one line, not the full report (the detail lives in the `bugs/` file).
+- While you're here, prune the section: drop any bug already marked `fixed` (its history is in git), and don't add a duplicate of one already listed.
+- `CLAUDE.md` loads into context on every session, so keep it lean — target the whole file under ~200 lines / ~12k characters. If it's already over, condense it (or run `/tidy`) instead of growing it further.
 
 Tell the user: "Bug file has been written. Run /build when you are ready to fix it (and any other planned bugs)."
