@@ -68,7 +68,8 @@ The file should include:
 - **Decisions** — every choice the user made between options, plus every "you decide" call, as plain-English bullets with one line of reasoning. Example: `Notification style: in-app banner — chose over email because feature is meant for in-session feedback.`
 
 3. Update `CLAUDE.md`:
-- Add the new feature to the feature inventory with status `planned`
+- Add the new feature to the feature inventory with status `planned` — one line (name + status), not a description (the detail lives in the `features/` file).
+- Keep the inventory tight: don't duplicate a feature that's already listed, and collapse long-built features to a single line. `CLAUDE.md` loads into every session, so target the whole file under ~200 lines / ~12k characters — if it's already over, condense it (or run `/tidy`) rather than growing it.
 
 4. After the file and `CLAUDE.md` are updated, print a focused **Claude Design prompt** directly to the chat — do not save it to a file. The user will paste it into their existing Claude Design project so it inherits the design system already loaded there.
 

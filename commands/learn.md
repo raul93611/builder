@@ -31,7 +31,7 @@ Do not dump all lessons at once. One at a time.
 
 ## After all lessons are reviewed
 
-Append all approved lessons to `~/.claude/CLAUDE.md` under the correct section:
+Save approved lessons to `~/.claude/CLAUDE.md` under the correct section:
 - `## PRD Lessons`
 - `## Feature Lessons`
 - `## Build Lessons`
@@ -42,4 +42,12 @@ Format each entry as:
 - [YYYY-MM-DD] Lesson summary in one or two sentences.
 ```
 
-Tell the user: "Done. X lessons saved to global CLAUDE.md."
+**Keep the global file lean — it loads into context at the start of every session, in every project, so its size costs performance on every request.** Do not blindly append:
+
+1. **Dedup / supersede before saving.** For each approved lesson, scan the target section first:
+   - If a near-duplicate already exists, merge the two into one sharper entry instead of adding a second.
+   - If the new lesson supersedes an old one (newer framework version, better fix), replace the old entry rather than stacking both.
+   - Only add a fresh bullet when the lesson is genuinely new.
+2. **Watch the budget.** Target the whole file at **under ~200 lines / ~12k characters**. If saving these lessons would turn a section into a wall of overlapping bullets, or push the file past target, consolidate related entries as part of this save (e.g. several Prisma notes → one) — or run `/tidy global` first.
+
+Tell the user: "Done. X lessons saved to global CLAUDE.md (now N lines / M chars)."
