@@ -102,6 +102,31 @@ If a Claude Design handoff was provided in step 7 of the pre-flight, it takes pr
 - Commit config changes separately: `chore: setup [tool/service]`
 - Write clear, descriptive commit messages
 
+## Self-Review Pass
+
+After all features and bugs are built and the full test suite is green, do one focused review pass before wrapping up. The tests prove the code *works* — this pass proves it isn't *more code than the job needed*. It is the lazy senior dev's second look: the build drifts toward over-building across a long autonomous session, and a fresh pass with one job catches what slipped through.
+
+Review the diff for this build (everything on the branch vs `main`) and hunt **only** for over-engineering. For each finding, cut it — then re-run the full test suite to confirm it is still green. Never trade correctness for fewer lines.
+
+### What to cut
+- **Reinvented platform / stdlib** — a dependency or hand-rolled block doing what the language, runtime, or browser already ships: `<input type="date">` over a date-picker lib, `structuredClone` over a deep-clone util, `Object.groupBy` over a manual loop, a DB constraint over app-level checks.
+- **Unneeded dependency** — a package added for what an already-installed dep or a few lines cover. Drop it.
+- **Speculative abstraction** — an interface with one implementation, a factory for one product, a wrapper that only delegates, a config value nothing sets. Inline it until a second caller exists.
+- **Dead flexibility** — options, flags, or branches nothing reaches. Delete.
+- **Duplication** — two components or helpers that are near-copies. Collapse to one.
+- **Longer than it needs to be** — same logic, fewer lines, no loss of clarity. Take the shorter form.
+
+### What to leave alone (never flag these as bloat)
+- The deliberate scaffold this build is *supposed* to produce: Docker dev + prod, the seed script, `.env.example`, the migration entrypoint.
+- The UI Standards from section 4 — loading skeletons, empty states, hover/focus states, responsive layout, `data-testid` hooks. Required, not excess.
+- Input validation at trust boundaries, error handling that prevents data loss, security, accessibility. Lazy is never careless.
+- Anything `PRD.md` explicitly required, even if it looks heavy. The PRD wins.
+- The one test per feature / bug — that is the floor, not excess.
+
+### After the pass
+- Anything cut: commit it on its own — `refactor: trim over-engineering from [area]` — only after confirming the suite is still green.
+- Nothing to cut: note it in one line and move on. A lean build needs no apology.
+
 ## When Build is Complete
 
 1. Update `CLAUDE.md` — and keep it lean. It loads into context at the start of every future session, so its size costs performance on every request. Target **under ~200 lines / ~12k characters**.
@@ -128,6 +153,7 @@ If a Claude Design handoff was provided in step 7 of the pre-flight, it takes pr
    - What was built (feature list)
    - Any decisions made that were not in the PRD
    - Any items that were skipped or partially implemented and why
+   - What the self-review pass simplified (over-engineering cut), or "nothing — build was already lean"
    - Next steps (review branch, run locally with `docker compose up -d`, push when ready)
 
 ## Decision Making Rules
