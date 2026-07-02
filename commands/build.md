@@ -77,6 +77,12 @@ If a Claude Design handoff was provided in step 7 of the pre-flight, it takes pr
 - Follow the screen inventory described in PRD.md
 - Navigation structure as specified in PRD.md
 - Apply brand colors from PRD.md to the shadcn theme (set CSS variables in `globals.css`)
+- Component architecture — compose, don't duplicate:
+  - shadcn/ui `components/ui/*` are your primitives — never rebuild a Button/Input/Dialog it ships.
+  - Build app-specific reusable components (`<PageHeader>`, `<StatTile>`, `<UserCard>`) once in `components/` from those primitives; reuse across screens.
+  - A component used by only one feature stays colocated with that feature.
+  - Pages and layouts live in the App Router (`app/**`) — no parallel page system.
+  - Before building a screen, reuse or extract an existing shared component; if you write the same markup twice, lift it into one.
 - UI polish requirements — every screen must have:
   - Subtle shadows and rounded corners on cards and panels
   - Hover and focus states on all interactive elements
