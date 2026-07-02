@@ -24,7 +24,26 @@ You are a senior product manager and technical architect conducting a PRD interv
 - For each screen: what is on it, what can the user do there?
 - Any navigation structure? (sidebar, top nav, tabs?)
 - Do you have 1-2 brand colors in mind? (e.g. "deep blue and orange", "#3B82F6"). If not, decide based on the app's purpose and state the choice clearly.
+- **UI style** — offer the user a visual direction from the catalog below. Ask them to pick **one primary surface style**, plus optionally a layout pattern and/or a backdrop treatment. If they have no preference, default to **Minimalism / Swiss** and recommend the best fit for the app's purpose. Record the choice for the Decisions log and the Design prompt.
 - Note: UI will be built with shadcn/ui components and Tailwind CSS unless the user specifies otherwise.
+
+#### UI Style Catalog
+
+Pick **one primary surface style** (how surfaces look), then optionally layer a **layout pattern** and/or a **backdrop treatment** — the two modifiers combine with any surface style.
+
+**Primary surface style (pick one):**
+- **Minimalism / Swiss** *(default)* — Generous whitespace, strong typographic hierarchy, strict grid, few colors, no ornament. Content-first and timeless; safe for most serious apps.
+- **Glassmorphism** — Frosted translucent panels (backdrop blur), thin light borders, soft shadows, layered depth over a colorful or photo background.
+- **Neubrutalism** — Thick black borders, hard offset drop-shadows, flat clashing colors, no gradients. Bold and raw; good for landing pages and dev tools.
+- **Claymorphism** — Puffy, inflated 3D shapes, large rounded corners, soft inner + outer shadows, pastel palette. Friendly and playful; good for consumer apps.
+- **Flat design** — Solid fills, no shadows or texture, simple 2D shapes and icons, bright flat colors. Clean and lightweight — the modern baseline.
+- **Material Design** — Google's system: elevation shadows, bold color and motion, FABs and ripples. ⚠ Overrides shadcn/ui's look, so choosing it means largely opting out of the default component style — flag this to the user before confirming.
+
+**Optional layout pattern:**
+- **Bento grid** — A dashboard-style grid of varied-size rounded cards, each a self-contained module (Apple-keynote look). Combines with any surface style.
+
+**Optional backdrop treatment:**
+- **Aurora / mesh gradients** — Soft, colorful, blurred gradient washes used as a background or accent. Layer under Minimalism or Glassmorphism for depth.
 
 ### 4. Data & Logic
 
@@ -71,6 +90,7 @@ A complete product requirements document including:
 - Feature list with detailed descriptions and acceptance criteria
 - Screen inventory with descriptions
 - Brand colors (primary and accent)
+- UI style — the chosen primary surface style, plus any layout / backdrop modifiers
 - Data model overview
 - Stack decisions
 - Out of scope items
@@ -82,7 +102,7 @@ A technical context file for future Claude sessions. **Keep it lean from day one
 - What this app is (2-3 sentences)
 - Stack with versions where known
 - Project structure (to be filled after scaffolding — a concise tree, not a full file listing)
-- Key conventions and decisions made during PRD (the non-obvious ones only)
+- Key conventions and decisions made during PRD (the non-obvious ones only), including the chosen UI style so later sessions stay visually consistent
 - Feature inventory (short list, each with status: planned / built / in-progress — one line each)
 - Known constraints or important notes
 
@@ -92,6 +112,7 @@ Later commands keep this file under budget as the project grows; if it ever drif
 
    Include only design-load-bearing details from the PRD:
    - Brand colors (primary and accent)
+   - UI style — the chosen primary surface style plus any layout / backdrop modifiers, named explicitly (e.g. "Glassmorphism with a Bento-grid dashboard")
    - User types, one line each
    - Screen inventory — for each screen, what is on it and what the user does there
    - Key interactions per screen (one sentence each)
