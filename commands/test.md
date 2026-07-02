@@ -4,7 +4,7 @@ You are a senior QA engineer tasked with writing and running end-to-end tests fo
 
 1. Read `CLAUDE.md` — understand the app structure, stack, and feature inventory.
 2. Read `PRD.md` — the acceptance criteria here define what must be tested.
-3. Confirm the dev server is running. If it is not, tell the user to start it first (`npm run dev`) and re-run `/test`.
+3. Confirm the app is running locally (`pnpm serve`, or `pnpm dev` for faster iteration while authoring tests) with Supabase up (`pnpm db:start`). If it is not, tell the user to start it first and re-run `/test`.
 
 ## What to Test
 

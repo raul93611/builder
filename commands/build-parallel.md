@@ -38,7 +38,7 @@ If the spec for an item is too thin to investigate confidently (e.g. a vague fea
 Compare the file footprints pairwise. Classify overlaps:
 
 - **Hard overlap** — two items modify the same logic file (a route, a component, a query, a shared util). Parallel-unsafe.
-- **Soft overlap** — two items both touch a shared meta file (`package.json`, `package-lock.json`, `prisma/schema.prisma`, `prisma/migrations/`, `app/layout.tsx`, navigation files, `globals.css`, `.env.example`, barrel exports). Expected to merge but always needs reconciliation.
+- **Soft overlap** — two items both touch a shared meta file (`package.json`, `pnpm-lock.yaml`, `prisma/schema.prisma`, `prisma/migrations/`, `app/layout.tsx`, navigation files, `globals.css`, `.env.example`, barrel exports). Expected to merge but always needs reconciliation.
 
 Build a conflict matrix and present it to the user:
 
@@ -115,7 +115,7 @@ For each `done` branch, in order:
 3. If the merge produces conflicts, classify each conflicting file into one of two tiers:
 
    **Mechanical conflicts** — auto-resolve silently, no user prompt:
-   - `package.json` / `package-lock.json` — union the deps lists, then re-run `npm install` to regenerate the lockfile cleanly.
+   - `package.json` / `pnpm-lock.yaml` — union the deps lists, then re-run `pnpm install` to regenerate the lockfile cleanly.
    - `prisma/migrations/` — renumber colliding timestamps so migrations apply in deterministic order.
    - Barrel exports and route registries — union both sides.
 
@@ -127,10 +127,10 @@ For each `done` branch, in order:
    - If the user says "skip", "needs-review", or otherwise opts out of resolving this conflict now, abort the merge for this branch and proceed to step 6 (rollback + mark `needs-review`). Do not block the rest of the batch on a single hard conflict.
 
 4. Once all conflicts are resolved (mechanical + interactive), run verification:
-   - `npm install` (in case deps changed)
-   - `npm run typecheck` if the project has a typecheck script (or `tsc --noEmit`)
-   - `npm test` (unit tests only, not E2E)
-   - `npx prisma migrate deploy --dry-run` if Prisma is in use
+   - `pnpm install` (in case deps changed)
+   - `pnpm run typecheck` if the project has a typecheck script (or `tsc --noEmit`)
+   - `pnpm test` (unit tests only, not E2E)
+   - `pnpm exec prisma migrate deploy --dry-run` if Prisma is in use
 
 5. If verification passes, the item is `merged`. Its worktree is cleaned up:
    - `git worktree remove ../<repo-name>-<item-name>`
@@ -153,8 +153,8 @@ Report to the user:
 - **Conflicts resolved during merge:** list mechanical auto-resolutions and any semantic conflicts the user resolved interactively, so they know what to spot-check.
 - **Next steps:**
   1. Review the integration branch (`git log parallel/<first-item-name> --graph`).
-  2. Run the app locally with `docker compose up -d` to smoke-test the integrated state.
-  3. Push when ready: `git push origin parallel/<first-item-name>` (this is when Vercel/Netlify/etc. will see it). Do not merge to main automatically — let the user decide when to ship.
+  2. Start Supabase (`pnpm db:start`) and run the app locally with `pnpm serve` to smoke-test the integrated state.
+  3. Push when ready: `git push origin parallel/<first-item-name>` (this is when Vercel will see it). Do not merge to main automatically — let the user decide when to ship.
   4. For each `needs-review` or `blocked` item: cd into its worktree and run `/build` interactively to finish the job, or refine the spec and re-queue.
 
 ## Hard Rules

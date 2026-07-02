@@ -58,11 +58,12 @@ Walk the user through the data model in plain English. Never use jargon like "sc
 
 ### 5. Stack
 - Ask if the user has stack preferences. If not, default to:
-  - Framework: Next.js (App Router)
+  - Framework: Next.js (App Router), TypeScript, pnpm
   - UI: shadcn/ui + Tailwind CSS
-  - Database: PostgreSQL via Prisma
-  - Auth: NextAuth.js
-  - Hosting: Vercel
+  - Database + Storage: Supabase (Postgres + Storage), with Prisma as the ORM/migration layer
+  - Auth: NextAuth.js — authorization enforced app-layer (scope every query to the current user), not via Supabase RLS
+  - Hosting: Vercel (production deploys via `git push`)
+  - Versions: latest stable of each package
   - State: Default to no state manager unless complexity requires it
 - Confirm the chosen stack explicitly.
 

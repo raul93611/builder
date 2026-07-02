@@ -35,16 +35,21 @@ You are a senior full-stack developer tasked with autonomously building an app f
 Follow this order strictly:
 
 ### 1. Scaffold
-- Set up the project structure based on the stack in PRD.md
-- Install dependencies
+- Set up the project structure based on the stack in PRD.md (Next.js App Router, TypeScript, pnpm)
+- Install dependencies with pnpm — latest stable of each package — and commit `pnpm-lock.yaml`
 - Configure environment variables (create `.env.example` with all required keys listed)
-- Set up the database schema if applicable
-- Configure Docker for both dev and prod with a single `docker compose up -d` command:
-  - Use `depends_on` with `condition: service_healthy` so the app waits for the DB to be ready
-  - Add a startup entrypoint script inside the app container that runs migrations then starts the app
-  - Dev: `docker-compose.yml` — mounts source code as volume for hot reload
-  - Prod: `docker-compose.prod.yml` — builds the optimized image, no volume mounts
-  - If PRD specifies seed data for dev: include a seed script that runs automatically in dev only
+- Local database + storage run via the Supabase CLI, not a hand-written Docker stack:
+  - Add `supabase/config.toml`; give the project a non-default port range (54xxx) so it runs alongside other local Supabase projects
+  - `DATABASE_URL` points at the local Supabase Postgres — document it in `.env.example`
+- Set up the schema with Prisma (`prisma/schema.prisma`); migrations via `prisma migrate`
+- Add the standard scripts to `package.json`:
+  - `dev` — `next dev` on a fixed project port (HMR for local iteration)
+  - `build` / `start` — production build / serve
+  - `serve` — `pnpm build && pnpm start` (the default way to run over SSH — a built app is far snappier than `next dev`)
+  - `db:start` / `db:stop` / `db:status` — Supabase CLI stack
+  - `db:migrate` / `db:deploy` / `db:reset` / `db:seed` — Prisma
+  - If PRD specifies seed data for dev: `db:seed` applies it (idempotent)
+- Do NOT scaffold Docker for the app or a `docker-compose.prod.yml` — production is Vercel via `git push`. Only add app Docker if PRD explicitly names a non-Vercel deploy target.
 
 ### 2. Fix Bugs First (if any)
 - If `bugs/` contains files with status `planned`, fix them all before touching features.
@@ -100,6 +105,9 @@ If a Claude Design handoff was provided in step 7 of the pre-flight, it takes pr
 - Never hardcode secrets or API keys
 - All external service configs go in `.env` variables
 - Document every required env variable in `.env.example`
+- Authorization is app-layer (no Supabase RLS with NextAuth): scope every Prisma query to the current NextAuth user — a missing `where: { userId }` is a data leak, not a blocked row.
+- Vercel + Prisma + Supabase: use the Supabase pooler for `DATABASE_URL` (PgBouncer `:6543?pgbouncer=true`) plus a `DIRECT_URL` (`:5432`) for migrations, or serverless exhausts connections.
+- Supabase Storage from a NextAuth app: access it server-side with the service-role key + app-layer authz (no Supabase Auth JWT to drive RLS).
 
 ## Commit Strategy
 - Commit after each completed feature: `feat: add [feature name]`
@@ -123,7 +131,7 @@ Review the diff for this build (everything on the branch vs `main`) and hunt **o
 - **Longer than it needs to be** — same logic, fewer lines, no loss of clarity. Take the shorter form.
 
 ### What to leave alone (never flag these as bloat)
-- The deliberate scaffold this build is *supposed* to produce: Docker dev + prod, the seed script, `.env.example`, the migration entrypoint.
+- The deliberate scaffold this build is *supposed* to produce: the standard `package.json` scripts (`dev`/`build`/`serve`/`db:*`), the Supabase local config, the seed script, `.env.example`.
 - The UI Standards from section 4 — loading skeletons, empty states, hover/focus states, responsive layout, `data-testid` hooks. Required, not excess.
 - Input validation at trust boundaries, error handling that prevents data loss, security, accessibility. Lazy is never careless.
 - Anything `PRD.md` explicitly required, even if it looks heavy. The PRD wins.
@@ -141,10 +149,10 @@ Review the diff for this build (everything on the branch vs `main`) and hunt **o
    - Add only implementation notes that aren't obvious from the code: non-obvious decisions, gotchas, active constraints. Skip anything a developer would learn just by reading the file it describes.
    - If `CLAUDE.md` is already over target when you open it (common on long-running projects), consolidate it back under target as part of this step — merge stale notes, drop detail for code that now speaks for itself — or run `/tidy` first. Never leave it bigger than you found it without a reason.
 
-2. Generate `DEPLOYMENT.md` with production setup instructions based on the stack used:
-   - Environment variables required (reference `.env.example`)
-   - Docker setup: how to build and run with `docker compose up -d`
-   - Database setup: migrations, seeding if applicable
+2. Generate `DEPLOYMENT.md` with production setup instructions:
+   - Deploy target: Vercel — production deploys come from `git push` to the production branch, never the CLI
+   - Environment variables required (reference `.env.example`), including the Supabase pooler `DATABASE_URL` + `DIRECT_URL` split for serverless
+   - Database: Prisma migrations against Supabase (`prisma migrate deploy`); seeding if applicable
    - Any third-party services that need to be configured in prod
    - Health check URL to verify the app is running
 
@@ -160,7 +168,7 @@ Review the diff for this build (everything on the branch vs `main`) and hunt **o
    - Any decisions made that were not in the PRD
    - Any items that were skipped or partially implemented and why
    - What the self-review pass simplified (over-engineering cut), or "nothing — build was already lean"
-   - Next steps (review branch, run locally with `docker compose up -d`, push when ready)
+   - Next steps (review branch, start Supabase with `pnpm db:start`, run locally with `pnpm serve`, push when ready)
 
 ## Decision Making Rules
 
