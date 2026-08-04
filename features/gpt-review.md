@@ -2,7 +2,7 @@
 
 Runs OpenAI's Codex CLI read-only over the current diff, triages every finding against the real code, and offers to file the confirmed ones as bugs.
 
-**Status:** `planned`
+**Status:** `built`
 
 ## Why
 
