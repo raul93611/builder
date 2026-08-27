@@ -30,6 +30,31 @@ You are a senior full-stack developer tasked with autonomously building an app f
   - Only bugs (no features): `fix/bugs-batch`
 - All work happens on this branch. Never commit directly to main.
 
+### Commit the specs before building anything
+
+This build's last step deletes the specs it consumed. A file git has never seen exists in no
+object at all — not in a commit, not as a dangling blob, not in the reflog — so deleting an
+untracked spec destroys it and its Decisions log permanently, silently, with the build still
+reporting success. Commit them first, every time.
+
+As soon as the branch exists, stage the build's inputs **by explicit path** and commit:
+
+```
+git add PRD.md CLAUDE.md features/*.md bugs/*.md   # only the paths that actually exist
+git commit -m "chore: track specs for this build"
+```
+
+- **Explicit paths only.** Never `git add -A`, `git add .`, or `git add features/` — blanket
+  staging sweeps in whatever else happens to be sitting in the tree.
+- **"Nothing to commit" is success, not an error.** The user may have committed the specs by
+  hand. `git commit` exits non-zero with nothing staged — treat that as already done, carry on.
+- **Fresh repo with no commits yet:** there is no root commit to branch from, so the order
+  inverts. `git init`, stage the specs, commit them on `main` as `chore: add project specs`,
+  *then* cut the build branch from it. A spec-only root commit is the project baseline rather
+  than build work, so this does not break "never commit directly to main."
+
+Do not start scaffolding until this commit exists.
+
 ## Build Process
 
 Follow this order strictly:
@@ -160,6 +185,12 @@ Review the diff for this build (everything on the branch vs `main`) and hunt **o
    - Delete `PRD.md`
    - Delete all files inside `features/` that have status `built`
    - Delete all files inside `bugs/` that have status `fixed`
+   - **Commit the deletion** — `chore: remove consumed specs`. Their content stays retrievable at
+     the spec commit from Git Setup, so this is a clean removal rather than a loss; leaving it
+     uncommitted just hands the user a dirty tree to reconcile.
+   - **If the Git Setup spec commit never happened, do not delete anything.** Say so in the final
+     report and leave the files in place. An uncommitted spec is unrecoverable once deleted, and a
+     tidy folder is not worth destroying the record of every decision behind the work.
 
 4. Do NOT push to main. Leave the branch ready for review.
 
