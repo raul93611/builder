@@ -62,21 +62,36 @@ Show the user the final plan and ask for explicit confirmation before proceeding
 
 Once confirmed:
 
-1. Verify `main` exists and is clean. If not, stop and report.
+1. Verify `main` exists and has no uncommitted *modifications*. If not, stop and report. Untracked
+   spec files are expected at this point — step 3 is what commits them.
 2. Create the integration branch from `main`:
    ```
    git branch parallel/<first-item-name> main
    ```
    Use the first selected item's name (kebab-case) for `<first-item-name>`. The integration branch is created locally only — never pushed.
-3. For each selected item, create a worktree off the integration branch:
+3. **Commit the specs to the integration branch before creating any worktree.** A worktree is a
+   fresh checkout of a branch: untracked files in the main working tree do not come along. If the
+   specs are untracked, every worktree gets an empty `features/` and `bugs/`, each headless
+   `/build` finds zero planned items, and they all exit 0 having built nothing — a clean success
+   with no work done and no error anywhere to explain it.
+   ```
+   git checkout parallel/<first-item-name>
+   git add PRD.md CLAUDE.md features/*.md bugs/*.md   # explicit paths only, never `git add -A`
+   git commit -m "chore: track specs for this parallel build"
+   ```
+   "Nothing to commit" means they were already tracked — carry on.
+4. For each selected item, create a worktree off the integration branch:
    ```
    git worktree add ../<repo-name>-<item-name> -b <branch-type>/<item-name> parallel/<first-item-name>
    ```
    Branch types: `feature/` for features, `fix/` for bugs.
-4. Inside each worktree:
+5. Inside each worktree:
    - Copy `.env` from the main repo (if it exists) so the build has credentials.
    - Remove all spec files from `features/` and `bugs/` *except* the one this worktree is responsible for. This is what tells the autonomous `/build` inside this worktree what to do — it should see exactly one planned item.
    - Confirm the worktree's `CLAUDE.md` is intact.
+   - **Verify the worktree holds exactly one planned spec before fanning out.** If `features/` and
+     `bugs/` are empty, the specs never reached the branch — stop and report. Never hand a headless
+     build a worktree with nothing in it to do.
 
 ## Phase 5 — Autonomous Fan-Out
 
