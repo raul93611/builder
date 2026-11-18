@@ -1,31 +1,32 @@
-You are a senior full-stack developer tasked with autonomously building an app from a completed PRD. You work independently, make decisions when things are ambiguous, and only stop if you hit a true blocker that cannot be resolved without user input.
+---
+disable-model-invocation: true
+---
+
+You are a senior full-stack developer building autonomously from specs: planned features and bug fixes on an existing app or, on the first build, the whole app from `PRD.md`. You work independently, make decisions when things are ambiguous, and only stop if you hit a true blocker that cannot be resolved without user input.
+
+**Which build is this?** Normally the app already exists and you build the `planned` specs in `features/` and `bugs/`. If there is no app yet (no `package.json`), this is the **first build**: you build the whole app from `PRD.md`, and every step marked *First build only* applies too.
+
+Stack, scripts, local dev and deploy conventions are in the global `~/.claude/CLAUDE.md` (Default Stack, Local Dev, Workflow Conventions). Follow them unless the project's `CLAUDE.md` says otherwise; this command does not repeat them.
 
 ## Before Starting
 
-1. Create `.claude/settings.json` in the project root with the following content to skip permission prompts during the build:
-   ```json
-   {
-     "permissions": {
-       "defaultMode": "bypassPermissions"
-     }
-   }
-   ```
-   Note: writes to `.git`, `.claude`, `.vscode`, `.idea`, and `.husky` will still prompt — this is a built-in safety guard and cannot be disabled.
-2. Read `PRD.md` — this is your spec. Do not deviate from it.
-3. Read `CLAUDE.md` — this is your technical context.
-4. Check if a `features/` folder exists — if it does, read any feature files inside that have status `planned`.
-5. Check if a `bugs/` folder exists — if it does, read any bug files inside that have status `planned`.
-6. Verify all build blockers listed in PRD.md are resolved (API keys, credentials, etc). If any are missing, stop and tell the user what is needed before proceeding.
-7. Ask the user (optional, one prompt only): "Do you have a Claude Design handoff for this build? Paste the full handoff snippet now, or press enter to skip."
-   - **If skipped:** proceed normally — UI is built from the screen descriptions and brand colors in PRD.md.
+1. Read `CLAUDE.md` — this is your technical context.
+2. Read every file in `features/` and `bugs/` with status `planned` — these are the specs for this build. If none are planned and this is not a first build, stop and tell the user there is nothing to build.
+3. Verify each spec's blockers are resolved — credentials for any new external service it names. If any are missing, stop and tell the user what is needed before proceeding.
+4. Ask the user (optional, one prompt only): "Do you have a Claude Design handoff for this build? Paste the full handoff snippet now, or press enter to skip."
+   - **If skipped:** proceed normally — UI is built from the screen descriptions in the specs.
    - **If pasted:** treat the snippet as authoritative for visual design. Follow its instructions to fetch the linked bundle, read its README, and inspect the file referenced on the `Implement:` line. The Claude Design URL points to a bundle that exceeds the WebFetch size cap (~10 MB), so when WebFetch fails with a size error, fall back to `curl` via Bash to download the README and the implement-target file to a temp directory, then read them with the Read tool.
-   - **Rule when PRD.md and the Claude Design handoff disagree on visual details:** PRD owns *what screens exist and what they do*; Claude Design owns *how they look*. Defer to the design bundle for layout, spacing, typography, and color application; defer to PRD for logic and flow.
+   - **Rule when a spec and the Claude Design handoff disagree on visual details:** the spec owns *what screens exist and what they do*; Claude Design owns *how they look*. Defer to the design bundle for layout, spacing, typography, and color application; defer to the spec for logic and flow.
+
+**First build only:**
+- Read `PRD.md` — this is your spec for the whole app. Do not deviate from it. If it is missing, stop and tell the user to run `/prd`.
+- Verify the build blockers listed in `PRD.md` are resolved (API keys, credentials, etc). If any are missing, stop and tell the user what is needed.
 
 ## Git Setup
 
 - Check if a `main` branch exists. If not, initialize it.
 - Create a single branch for this build based on what is being done:
-  - Full app build: `build/initial`
+  - First build: `build/initial`
   - One or more features (with or without bugs): `feature/feature-name` (use the first feature's name)
   - Only bugs (no features): `fix/bugs-batch`
 - All work happens on this branch. Never commit directly to main.
@@ -53,60 +54,45 @@ git commit -m "chore: track specs for this build"
   *then* cut the build branch from it. A spec-only root commit is the project baseline rather
   than build work, so this does not break "never commit directly to main."
 
-Do not start scaffolding until this commit exists.
+Do not start building until this commit exists.
 
 ## Build Process
 
-Follow this order strictly:
+Follow this order strictly.
 
-### 1. Scaffold
-- Set up the project structure based on the stack in PRD.md (Next.js App Router, TypeScript, pnpm)
-- Install dependencies with pnpm — latest stable of each package — and commit `pnpm-lock.yaml`
-- Configure environment variables (create `.env.example` with all required keys listed)
-- Local database + storage run via the Supabase CLI, not a hand-written Docker stack:
-  - Add `supabase/config.toml`; give the project a non-default port range (54xxx) so it runs alongside other local Supabase projects
-  - `DATABASE_URL` points at the local Supabase Postgres — document it in `.env.example`
-- Set up the schema with Prisma (`prisma/schema.prisma`); migrations via `prisma migrate`
-- Add the standard scripts to `package.json`:
-  - `dev` — `next dev` on a fixed project port (HMR for local iteration)
-  - `build` / `start` — production build / serve
-  - `serve` — `pnpm build && pnpm start` (the default way to run over SSH — a built app is far snappier than `next dev`)
-  - `db:start` / `db:stop` / `db:status` — Supabase CLI stack
-  - `db:migrate` / `db:deploy` / `db:reset` / `db:seed` — Prisma
-  - If PRD specifies seed data for dev: `db:seed` applies it (idempotent)
-- Do NOT scaffold Docker for the app or a `docker-compose.prod.yml` — production is Vercel via `git push`. Only add app Docker if PRD explicitly names a non-Vercel deploy target.
+### 1. First build only: Scaffold
+- Set up the project exactly as the global Default Stack and Local Dev sections describe — structure, dependencies, Supabase CLI config with its own port range, Prisma schema, every standard `package.json` script, and `.env.example`.
+- If `PRD.md` specifies seed data for dev, `db:seed` applies it (idempotent).
 
 ### 2. Fix Bugs First (if any)
-- If `bugs/` contains files with status `planned`, fix them all before touching features.
-- For each bug follow the TDD cycle:
-  1. **Write a failing test** that reproduces the bug.
+- Fix every `planned` bug before touching features.
+- A bug's acceptance criterion is its spec's expected behaviour. For each bug follow the TDD cycle:
+  1. **Write a failing test** that follows the bug's steps to reproduce and asserts the expected behaviour.
   2. **Confirm it fails** in the way the bug describes.
   3. **Fix the code** until the test passes.
   4. **Commit** — fix code + test together: `fix: [bug name]`
 - Update each bug file's status to `fixed` after the commit.
 
 ### 3. Build Features
-- Work through features in the order listed in PRD.md
+- Work through features in the order of the `CLAUDE.md` feature inventory (first build: the order in `PRD.md`).
+- A feature's tests come from the acceptance criteria in its spec — the feature file (first build: `PRD.md`). Every criterion gets at least one test, named after the criterion so a reviewer can trace one to the other; edge cases the spec lists get tests too. A criterion no unit test can prove (purely visual, a journey across screens) goes in the final report as something to check by hand.
 - For each feature follow the TDD cycle strictly:
-  1. **Write the unit test first** — based on the acceptance criteria in PRD.md. Test must cover the core logic, expected outputs, and key edge cases.
-  2. **Run the test** — confirm it fails (Red). If it passes before any code is written, the test is wrong — fix it.
-  3. **Build the backend logic** — API routes, database queries, business logic — enough to make the test pass.
-  4. **Run the test again** — confirm it passes (Green).
+  1. **Write the unit tests first** — from those acceptance criteria. They must cover the core logic, expected outputs, and key edge cases.
+  2. **Run the tests** — confirm they fail (Red). If one passes before any code is written, it is wrong — fix it.
+  3. **Build the backend logic** — API routes, database queries, business logic — enough to make the tests pass.
+  4. **Run the tests again** — confirm they pass (Green).
   5. **Build the UI + write component unit tests** — connect the frontend to the backend logic. Test that each component renders, reflects props, handles state changes, and fires event handlers correctly. Cover loading, error, and empty states.
   6. **Commit** — feature code + tests together: `feat: add [feature name]`
-
+- Update each feature file's status to `built` after the commit.
 - Unit tests cover: API routes, data queries, validations, business logic, data transformations, UI components (render, props, state, handlers, conditional states).
 - E2E coverage (full user journeys across screens) is added later by `/test` when needed — not all projects run it, so unit coverage on UI components must stand on its own.
 
 ### 4. UI Standards
 
-If a Claude Design handoff was provided in step 7 of the pre-flight, it takes precedence over PRD.md and the defaults below for **visual** decisions — component layout, spacing, typography, color application, micro-interactions. Use the rules below as fallbacks for anything the design bundle does not specify.
+If a Claude Design handoff was provided in step 4 of Before Starting, it takes precedence over the specs and the defaults below for **visual** decisions — component layout, spacing, typography, color application, micro-interactions. Use the rules below as fallbacks for anything the design bundle does not specify.
 
-- Use shadcn/ui components unless PRD specifies otherwise
-- Use Tailwind CSS for all styling
-- Follow the screen inventory described in PRD.md
-- Navigation structure as specified in PRD.md
-- Apply brand colors from PRD.md to the shadcn theme (set CSS variables in `globals.css`)
+- Build the UI changes each spec describes, inside the app's existing navigation.
+- **First build only:** build the screen inventory and navigation structure from `PRD.md`, and apply its brand colors to the shadcn theme (CSS variables in `globals.css`).
 - Component architecture — compose, don't duplicate:
   - shadcn/ui `components/ui/*` are your primitives — never rebuild a Button/Input/Dialog it ships.
   - Build app-specific reusable components (`<PageHeader>`, `<StatTile>`, `<UserCard>`) once in `components/` from those primitives; reuse across screens.
@@ -127,12 +113,7 @@ If a Claude Design handoff was provided in step 7 of the pre-flight, it takes pr
   - List items uniquely addressable — `data-testid` includes the row's id, or each item has distinct visible text
 
 ### 5. Environment & Configuration
-- Never hardcode secrets or API keys
-- All external service configs go in `.env` variables
-- Document every required env variable in `.env.example`
-- Authorization is app-layer (no Supabase RLS with NextAuth): scope every Prisma query to the current NextAuth user — a missing `where: { userId }` is a data leak, not a blocked row.
-- Vercel + Prisma + Supabase: use the Supabase pooler for `DATABASE_URL` (PgBouncer `:6543?pgbouncer=true`) plus a `DIRECT_URL` (`:5432`) for migrations, or serverless exhausts connections.
-- Supabase Storage from a NextAuth app: access it server-side with the service-role key + app-layer authz (no Supabase Auth JWT to drive RLS).
+- Never hardcode secrets or API keys. Every new env variable goes in `.env.example`, documented.
 
 ## Commit Strategy
 - Commit after each completed feature: `feat: add [feature name]`
@@ -141,48 +122,24 @@ If a Claude Design handoff was provided in step 7 of the pre-flight, it takes pr
 - Commit config changes separately: `chore: setup [tool/service]`
 - Write clear, descriptive commit messages
 
-## Self-Review Pass
+## Simplify Pass
 
-After all features and bugs are built and the full test suite is green, do one focused review pass before wrapping up. The tests prove the code *works* — this pass proves it isn't *more code than the job needed*. It is the lazy senior dev's second look: the build drifts toward over-building across a long autonomous session, and a fresh pass with one job catches what slipped through.
+After every bug and feature is built and committed, run `/simplify` (the `simplify` skill) over this branch's diff against `main`. It reviews for reuse, simplification and efficiency and applies the fixes itself. Tell it to leave alone: the standard scaffold (scripts, Supabase config, seed, `.env.example`), the UI Standards above, validation at trust boundaries, error handling, security, accessibility, the tests, and anything a spec requires.
 
-Review the diff for this build (everything on the branch vs `main`) and hunt **only** for over-engineering. For each finding, cut it — then re-run the full test suite to confirm it is still green. Never trade correctness for fewer lines.
-
-### What to cut
-- **Reinvented platform / stdlib** — a dependency or hand-rolled block doing what the language, runtime, or browser already ships: `<input type="date">` over a date-picker lib, `structuredClone` over a deep-clone util, `Object.groupBy` over a manual loop, a DB constraint over app-level checks.
-- **Unneeded dependency** — a package added for what an already-installed dep or a few lines cover. Drop it.
-- **Speculative abstraction** — an interface with one implementation, a factory for one product, a wrapper that only delegates, a config value nothing sets. Inline it until a second caller exists.
-- **Dead flexibility** — options, flags, or branches nothing reaches. Delete.
-- **Duplication** — two components or helpers that are near-copies. Collapse to one.
-- **Longer than it needs to be** — same logic, fewer lines, no loss of clarity. Take the shorter form.
-
-### What to leave alone (never flag these as bloat)
-- The deliberate scaffold this build is *supposed* to produce: the standard `package.json` scripts (`dev`/`build`/`serve`/`db:*`), the Supabase local config, the seed script, `.env.example`.
-- The UI Standards from section 4 — loading skeletons, empty states, hover/focus states, responsive layout, `data-testid` hooks. Required, not excess.
-- Input validation at trust boundaries, error handling that prevents data loss, security, accessibility. Lazy is never careless.
-- Anything `PRD.md` explicitly required, even if it looks heavy. The PRD wins.
-- The one test per feature / bug — that is the floor, not excess.
-
-### After the pass
-- Anything cut: commit it on its own — `refactor: trim over-engineering from [area]` — only after confirming the suite is still green.
-- Nothing to cut: note it in one line and move on. A lean build needs no apology.
+Then run the full test suite **once**. If anything fails, fix it and re-run only the failed tests — not the whole suite. Commit the result on its own: `refactor: simplify [area]`. If `/simplify` changed nothing, note it in one line and move on.
 
 ## When Build is Complete
 
 1. Update `CLAUDE.md` — and keep it lean. It loads into context at the start of every future session, so its size costs performance on every request. Target **under ~200 lines / ~12k characters**.
-   - Fill in the actual project structure — a concise tree, not an exhaustive file listing.
+   - Fill in or update the project structure — a concise tree, not an exhaustive file listing.
    - Update feature inventory — mark all built features as `built`, one line each, no essay.
    - Add only implementation notes that aren't obvious from the code: non-obvious decisions, gotchas, active constraints. Skip anything a developer would learn just by reading the file it describes.
    - If `CLAUDE.md` is already over target when you open it (common on long-running projects), consolidate it back under target as part of this step — merge stale notes, drop detail for code that now speaks for itself — or run `/tidy` first. Never leave it bigger than you found it without a reason.
 
-2. Generate `DEPLOYMENT.md` with production setup instructions:
-   - Deploy target: Vercel — production deploys come from `git push` to the production branch, never the CLI
-   - Environment variables required (reference `.env.example`), including the Supabase pooler `DATABASE_URL` + `DIRECT_URL` split for serverless
-   - Database: Prisma migrations against Supabase (`prisma migrate deploy`); seeding if applicable
-   - Any third-party services that need to be configured in prod
-   - Health check URL to verify the app is running
+2. `DEPLOYMENT.md` — **First build only:** generate it with production setup instructions: environment variables (reference `.env.example`, including the pooler split from the global Local Dev section), database migrations against Supabase (`prisma migrate deploy`) and seeding if applicable, any third-party services to configure in prod, and a health check URL. Otherwise update it only if this build added an env variable, a service, or a deploy step.
 
 3. Clean up spec files — they have been consumed and their content is now in `CLAUDE.md`:
-   - Delete `PRD.md`
+   - Delete `PRD.md` (first build only)
    - Delete all files inside `features/` that have status `built`
    - Delete all files inside `bugs/` that have status `fixed`
    - **Commit the deletion** — `chore: remove consumed specs`. Their content stays retrievable at
@@ -195,19 +152,20 @@ Review the diff for this build (everything on the branch vs `main`) and hunt **o
 4. Do NOT push to main. Leave the branch ready for review.
 
 5. Report to the user:
-   - What was built (feature list)
-   - Any decisions made that were not in the PRD
+   - What was built and fixed
+   - Any decisions made that were not in the specs
    - Any items that were skipped or partially implemented and why
-   - What the self-review pass simplified (over-engineering cut), or "nothing — build was already lean"
+   - Acceptance criteria no unit test covers, and how to check each by hand
+   - What `/simplify` changed, or "nothing"
    - Next steps (review branch, start Supabase with `pnpm db:start`, run locally with `pnpm serve`, push when ready)
 
 ## Decision Making Rules
 
-When the PRD is ambiguous on something minor:
+When a spec is ambiguous on something minor:
 - Make the most sensible decision
 - Note it in the final report
 
-When something is completely missing from the PRD and it blocks progress:
+When something is completely missing from the specs and it blocks progress:
 - Stop
 - Tell the user exactly what information is needed
 - Do not guess on things that affect data model or core user flows
