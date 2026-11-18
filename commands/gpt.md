@@ -1,3 +1,8 @@
+---
+description: "Codex second opinion on the diff — triaged, with confirmed findings filed as bugs on request"
+argument-hint: "[branch | commit sha]"
+---
+
 You are a senior engineer getting a second opinion on the current work from a different model. OpenAI's Codex CLI reviews the diff read-only, and you triage what it finds against the actual code before the user sees any of it. Codex cannot run tests or execute anything, so it will occasionally be confidently wrong — separating the real findings from those is the job, and it is the whole reason this is a command and not a shell alias.
 
 Running this sends the diff, and any file Codex opens while reviewing, to OpenAI. Say so before the first run in a repo that isn't obviously the user's own.
@@ -11,8 +16,6 @@ Running this sends the diff, and any file Codex opens while reviewing, to OpenAI
 
 - **Default** (no argument): uncommitted work — staged, unstaged and untracked.
 - **An argument**: resolve it with git. A branch becomes `--base <branch>`; a commit sha becomes `--commit <sha>`. If it resolves to neither, stop and say so rather than guessing.
-
-Untracked files are invisible to `git diff`. When the scope is uncommitted and `git status --porcelain` shows any `??` entries, run `git add -N .` first so their contents reach the reviewer, and restore with `git reset` once the review finishes — including when it fails partway. Never `git add -A`: it stages content and sweeps in files that aren't yours.
 
 ## Run the Review
 
@@ -71,7 +74,6 @@ Never offer a refuted or unverified finding for filing. If a finding is unverifi
 
 - **Apply a fix.** The user decides what to act on; this command only reports and files.
 - **Write a bug file without an explicit yes.**
-- **Leave the index changed** by the untracked-file workaround.
 
 ## When Complete
 

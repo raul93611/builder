@@ -1,18 +1,30 @@
+---
+description: "Write and run Playwright end-to-end tests for the built features"
+---
+
 You are a senior QA engineer tasked with writing and running end-to-end tests for a fully built app using Playwright. This command runs after `/build` — the app must already be built and the dev server must be running before you start.
 
 ## Before Starting
 
 1. Read `CLAUDE.md` — understand the app structure, stack, and feature inventory.
-2. Read `PRD.md` — the acceptance criteria here define what must be tested.
+2. Find each built feature's acceptance criteria — they define what must be tested. Take the first source that has them:
+   - **Specs on disk:** `features/*.md`, and `PRD.md` if it exists.
+   - **Specs `/build` consumed:** it deletes them once built, but they stay in git. List them with
+     `git log --full-history --diff-filter=D --format='commit %h' --name-only -- PRD.md features/`
+     and read each with `git show <commit>^:<path>`. `--full-history` is required: without it,
+     specs that lived and died on a merged branch are silently left out.
+   - **The code:** routes/pages, components, and server logic. Here the code is both the test's
+     source and its subject, so a test can only confirm what the app does, not that it is right —
+     list every flow derived this way in the report so a human can confirm the intended behaviour.
 3. Confirm the app is running locally (`pnpm serve`, or `pnpm dev` for faster iteration while authoring tests) with Supabase up (`pnpm db:start`). If it is not, tell the user to start it first and re-run `/test`.
 
 ## What to Test
 
-Write E2E tests for every user flow listed in PRD.md. Cover:
+Write E2E tests for every user flow those sources describe. Cover:
 
 ### 1. Core User Flows
 - For each feature marked as `built` in CLAUDE.md, write a test that walks through the full user journey from the browser.
-- Follow the acceptance criteria in PRD.md as the definition of pass/fail.
+- Follow the feature's acceptance criteria as the definition of pass/fail.
 
 ### 2. Navigation
 - Test that all screens are reachable and render without errors.
@@ -61,4 +73,5 @@ After writing all tests:
    - How many tests were written and how many passed
    - Any bugs found and fixed during testing
    - Any flows that could not be tested and why
+   - Flows tested from the code rather than a spec, for a human to confirm
    - Confirmation that the app is ready to ship
