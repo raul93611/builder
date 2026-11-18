@@ -36,20 +36,6 @@ else
   bad "spec commit does not precede the cleanup step"
 fi
 
-if grep -q 'chore: track specs for this parallel build' "$REPO/commands/build-parallel.md"; then
-  ok "build-parallel.md commits specs before fan-out"
-else
-  bad "build-parallel.md creates worktrees from uncommitted specs"
-fi
-
-ptrack=$(line "$REPO/commands/build-parallel.md" 'chore: track specs for this parallel build')
-ptree=$(line "$REPO/commands/build-parallel.md" 'git worktree add')
-if [ -n "$ptrack" ] && [ -n "$ptree" ] && [ "$ptrack" -lt "$ptree" ]; then
-  ok "spec commit is ordered before 'git worktree add'"
-else
-  bad "spec commit does not precede worktree creation"
-fi
-
 echo
 echo "behavioural — the prescribed git recipe survives the delete"
 

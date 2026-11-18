@@ -20,7 +20,6 @@ install.sh      symlinks commands/ into ~/.claude/commands
 - `/feature` — feature interview → `features/[name].md`
 - `/bug` — bug report interview → `bugs/[name].md`
 - `/build` — autonomous build from those specs; commits them, then consumes and deletes them
-- `/build-parallel` — fans planned items into git worktrees, builds each headless, merges
 - `/test` — e2e coverage · `/gpt` — Codex second opinion on the diff
 - `/upgrade` — dependency bumps · `/tidy` — trim CLAUDE.md files · `/learn` — extract lessons
 
@@ -29,9 +28,8 @@ install.sh      symlinks commands/ into ~/.claude/commands
 - Never commit directly to `main`. Command changes go on a branch and land via PR.
 - **Specs get committed before a build consumes them.** `/build` commits `PRD.md`, `features/*`,
   `bugs/*` and `CLAUDE.md` right after cutting its branch, and commits the deletion at the end.
-  `/build-parallel` commits them to the integration branch *before* `git worktree add` — a
-  worktree is a fresh checkout and never inherits untracked files. Both stage by explicit path;
-  `git add -A` in a project root is how unrelated files get swept into commits.
+  It stages by explicit path; `git add -A` in a project root is how unrelated files get swept
+  into commits.
 - A build that never made the spec commit must not run the cleanup step. An untracked spec that
   gets deleted is gone — no commit, no dangling blob, no reflog.
 - Verify a change by running the command in a scratch repo, with a negative control that proves
