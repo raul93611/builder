@@ -9,7 +9,7 @@ You are tidying CLAUDE.md memory files so they stay small enough to keep Claude 
 ## Budget
 
 For each CLAUDE.md file:
-- **Target:** ≤ 200 lines / ~12,000 characters.
+- **Target:** ≤ 200 lines.
 - **Ceiling:** ~40,000 characters. A file over this should be cut hard, not trimmed politely.
 
 ## Which file(s) to tidy
@@ -27,7 +27,7 @@ For each target file:
 
 1. **Measure.** Report current line count and character count, and classify it: under target / over target / over ceiling.
 
-2. **Dedup & merge.** Find entries that say the same thing or overlap heavily and merge them into one sharper, more general entry. In the global file the usual culprits are repeated framework lessons — e.g. several Prisma or NextAuth notes that collapse into one.
+2. **Dedup & merge.** Find entries that say the same thing or overlap heavily and merge them into one entry that keeps every detail of both — the fuller wording, plus anything the other adds. In the global file the usual culprits are repeated framework lessons — e.g. several Prisma or NextAuth notes covering the same gotcha.
 
 3. **Prune stale content.**
    - `## Known Bugs` entries marked `fixed` → remove (their history is in git).
@@ -35,13 +35,13 @@ For each target file:
    - Implementation notes describing code that now speaks for itself → remove.
    - A lesson superseded by a newer one → keep only the newer.
 
-4. **Generalize lessons.** A project-specific lesson ("In project X, Prisma v7 broke the Docker build") becomes a reusable rule ("Prisma v7 isn't Docker-ready — use v5 for multi-stage builds"). Keep the `[YYYY-MM-DD]` prefix; drop the project specifics.
+4. **Move misplaced lessons.** A lesson under the wrong section, or in the wrong file, moves to where it belongs — word for word, `[YYYY-MM-DD]` prefix included.
 
 5. **Re-measure and report.** Show before/after line and character counts and the headroom left under target. If still over target, say so and list what else could be cut.
 
 ## Rules
 
-- Never invent a lesson or change its meaning — only condense, merge, or remove.
+- Never invent a lesson or change its meaning. A lesson may be deleted, merged, or moved — never reworded to save space.
 - Preserve anything load-bearing: stack defaults, workflow conventions, active constraints, unfixed bugs, planned features.
 - Show the user a short summary of what was merged and what was removed **before** saving — this file shapes every future session, so a wrong cut is expensive. If the user passed `--yes` or asked to run unattended, skip the confirmation but still print the summary.
-- After saving, tell the user the new size and how much headroom remains under the 200-line / 12k-char target.
+- After saving, tell the user the new size and how much headroom remains under the 200-line target.
