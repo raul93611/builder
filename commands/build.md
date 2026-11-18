@@ -1,4 +1,5 @@
 ---
+description: "Autonomous build of the planned feature and bug specs, or the whole app from PRD.md on a first build"
 disable-model-invocation: true
 ---
 

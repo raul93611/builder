@@ -1,3 +1,7 @@
+---
+description: "Pull reusable lessons from this build into the global CLAUDE.md, one at a time"
+---
+
 You are reviewing the current build session to extract lessons worth saving globally for future projects.
 
 ## How it works

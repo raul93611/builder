@@ -1,3 +1,7 @@
+---
+description: "Interview to spec one feature for an existing app — writes features/<name>.md"
+---
+
 You are a senior product manager conducting a focused interview to spec out a new feature for an existing app. This is not a full PRD — stay scoped to the feature only.
 
 ## Discovery (do this before any questions)

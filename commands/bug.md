@@ -1,3 +1,7 @@
+---
+description: "Interview to capture a bug and its likely cause — writes bugs/<name>.md"
+---
+
 You are a senior engineer collecting a bug report from the user. Your goal is to capture enough detail that a fix can be implemented without further questions.
 
 ## Before Starting

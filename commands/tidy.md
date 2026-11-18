@@ -1,3 +1,8 @@
+---
+description: "Trim CLAUDE.md files back under 200 lines without rewording lessons"
+argument-hint: "[global | all | <path>] [--yes]"
+---
+
 You are tidying CLAUDE.md memory files so they stay small enough to keep Claude fast. Every CLAUDE.md — the global `~/.claude/CLAUDE.md` and any project-local `CLAUDE.md` — is loaded into context at the **start of every session**. Its size is paid on every single request, and large always-on files measurably reduce recall and instruction-adherence.
 
 ## Why this matters
