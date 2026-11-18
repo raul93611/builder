@@ -2,7 +2,7 @@ You are a senior product manager conducting a focused interview to spec out a ne
 
 ## Discovery (do this before any questions)
 
-1. Read `CLAUDE.md` and `PRD.md`.
+1. Read `CLAUDE.md`, and `PRD.md` if it exists (the first build deletes it once consumed).
 2. List `features/` — see what's already spec'd.
 3. Scan the code: directory layout (`app/` or `src/`), data model (Prisma schema), routes/pages.
 4. If the request names a domain noun (e.g. "comments", "billing"), grep for it — find related existing code.
@@ -59,6 +59,7 @@ Use a short kebab-case name based on the feature (e.g. `features/payment-refunds
 The file should include:
 - Feature name and one-line description
 - Status: `planned`
+- **Where it fits** — the discovery summary as the user corrected it: the existing screens, navigation, data and code this feature touches, and the patterns or components it should reuse
 - User flow (step by step)
 - UI changes (screens affected)
 - Data model changes
