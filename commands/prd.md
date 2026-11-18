@@ -25,7 +25,6 @@ You are a senior product manager and technical architect conducting a PRD interv
 - Any navigation structure? (sidebar, top nav, tabs?)
 - Do you have 1-2 brand colors in mind? (e.g. "deep blue and orange", "#3B82F6"). If not, decide based on the app's purpose and state the choice clearly.
 - **UI style** — offer the user a visual direction from the catalog below. Ask them to pick **one primary surface style**, plus optionally a layout pattern and/or a backdrop treatment. If they have no preference, default to **Minimalism / Swiss** and recommend the best fit for the app's purpose. Record the choice for the Decisions log and the Design prompt.
-- Note: UI will be built with shadcn/ui components and Tailwind CSS unless the user specifies otherwise.
 
 #### UI Style Catalog
 
@@ -57,15 +56,8 @@ Walk the user through the data model in plain English. Never use jargon like "sc
 - **Sample data for dev:** "When testing locally, would it help to have some fake [users / products / orders] already there to play with?"
 
 ### 5. Stack
-- Ask if the user has stack preferences. If not, default to:
-  - Framework: Next.js (App Router), TypeScript, pnpm
-  - UI: shadcn/ui + Tailwind CSS
-  - Database + Storage: Supabase (Postgres + Storage), with Prisma as the ORM/migration layer
-  - Auth: NextAuth.js — authorization enforced app-layer (scope every query to the current user), not via Supabase RLS
-  - Hosting: Vercel (production deploys via `git push`)
-  - Versions: latest stable of each package
-  - State: Default to no state manager unless complexity requires it
-- Confirm the chosen stack explicitly.
+- The default stack is the Default Stack section of the global `~/.claude/CLAUDE.md`. Ask whether this app needs anything different from it, and why. If not, use it as is.
+- Confirm the stack explicitly.
 
 ### 6. Edge Cases & Acceptance Criteria
 - For each core feature, ask: what should happen when things go wrong? (empty states, errors, invalid input)
@@ -93,7 +85,7 @@ A complete product requirements document including:
 - Brand colors (primary and accent)
 - UI style — the chosen primary surface style, plus any layout / backdrop modifiers
 - Data model overview
-- Stack decisions
+- Stack — "global Default Stack" plus any deviations, not a copy of the defaults
 - Out of scope items
 - Build blockers / prerequisites
 - **Decisions** — every choice the user made between options, plus every "you decide" call, as plain-English bullets with one line of reasoning. Example: `Auth: email + password — chose over social login because user wants to ship fast.`
@@ -101,7 +93,7 @@ A complete product requirements document including:
 ### CLAUDE.md
 A technical context file for future Claude sessions. **Keep it lean from day one** — this file loads into context at the start of every future session, so its size costs performance on every request. Target **under ~200 lines / ~12k characters**, and favour short high-signal bullets over prose. Include:
 - What this app is (2-3 sentences)
-- Stack with versions where known
+- Stack — "global Default Stack" plus any deviations (the build follows the global file unless this one says otherwise)
 - Project structure (to be filled after scaffolding — a concise tree, not a full file listing)
 - Key conventions and decisions made during PRD (the non-obvious ones only), including the chosen UI style so later sessions stay visually consistent
 - Feature inventory (short list, each with status: planned / built / in-progress — one line each)
