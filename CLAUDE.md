@@ -21,7 +21,7 @@ install.sh      symlinks commands/ into ~/.claude/commands
 - `/bug` — bug report interview → `bugs/[name].md`
 - `/build` — autonomous build from those specs; commits them, then consumes and deletes them
 - `/test` — e2e coverage · `/gpt` — Codex second opinion on the diff
-- `/upgrade` — dependency bumps · `/tidy` — trim CLAUDE.md files · `/learn` — extract lessons
+- `/upgrade` — dependency bumps · `/tidy` — trim CLAUDE.md files · `/learn` — extract lessons and approaches into global CLAUDE.md and the shelf
 
 ## Conventions
 

@@ -1,5 +1,5 @@
 ---
-description: "Pull reusable lessons from this build into the global CLAUDE.md, one at a time"
+description: "Pull reusable lessons and approaches from this build into the global CLAUDE.md and the shelf, one at a time"
 ---
 
 You are reviewing the current build session to extract lessons worth saving globally for future projects.
@@ -24,18 +24,48 @@ Good candidates:
 - Docker, CI, or deployment issues and their fixes
 - Patterns that worked unexpectedly well
 
+Also look for **approaches**: how a feature was built that a future project could reuse — the shape of the solution and why it worked, not this app's business logic.
+
+## Where each lesson goes
+
+- **Global CLAUDE.md** — a high-level rule that should shape every session, in one or two sentences.
+- **Shelf** — the detailed version: the situation, what we did, why, when it applies. Every approach goes here.
+- **Both** — a one-line rule in CLAUDE.md plus the detailed shelf entry.
+
+If the shelf tools aren't available in this session, skip the shelf and save to CLAUDE.md only.
+
 ## Process
 
 Go through the lessons one at a time. For each one:
-- State the lesson in plain language (no jargon the user won't understand)
-- Say which command it applies to (prd / feature / build / general)
-- Ask: "Save this one?" — user answers yes or no, then move to the next
+- State it in plain language and say which command it applies to (prd / feature / build / general).
+- Propose a destination (CLAUDE.md / shelf / both) with one line of why.
+- For the shelf, show the drafted entry (template below).
+- Ask: "Save this one?" — the user can say yes, no, or change the destination.
 
 Do not dump all lessons at once. One at a time.
 
+## Shelf entry template
+
+Fields: title · kind (`lesson` or `approach`) · one-line summary · learned in (this project) · tags — lowercase; call `list_shelf_tags` first and reuse existing tags.
+
+Body — these headings, in this order:
+- `## Situation` — what we were building or what went wrong
+- `## What we did` — the fix or the approach
+- `## Why it works` — reasoning and trade-offs
+- `## When it applies` — and when it doesn't; write it the way a future build would describe its own problem
+- `## Watch out for` — optional
+
+No code blocks — inline names of commands, settings and packages only. About 400 words max.
+
+## Saving to the shelf
+
+Call `save_shelf_entry`. If it refuses:
+- **Close match found:** show the user the match. Recommend updating it with `update_shelf_entry` — add what's new, a one-line reason, and `also_seen_in` this project. If it really is different, save again with `distinct: true`. The user decides.
+- **Template broken:** fix the entry to the rule named in the refusal and retry. Only ask the user if the fix would change the meaning.
+
 ## After all lessons are reviewed
 
-Save approved lessons to `~/.claude/CLAUDE.md` under the correct section:
+Save approved lessons whose destination is CLAUDE.md or both to `~/.claude/CLAUDE.md` under the correct section:
 - `## PRD Lessons`
 - `## Feature Lessons`
 - `## Build Lessons`
@@ -54,4 +84,4 @@ Format each entry as:
    - Only add a fresh bullet when the lesson is genuinely new.
 2. **Watch the budget.** Target the whole file at **under 200 lines**. If saving these lessons would push it past that, run `/tidy global` first. Making room may delete, merge or move a lesson, but never reword one to save space.
 
-Tell the user: "Done. X lessons saved to global CLAUDE.md (now N lines)."
+Tell the user: "Done. X lessons saved to global CLAUDE.md (now N lines), Y added to the shelf, Z shelf entries updated."
