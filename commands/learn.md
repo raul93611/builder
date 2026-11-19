@@ -59,6 +59,8 @@ No code blocks — inline names of commands, settings and packages only. About 4
 
 ## Saving to the shelf
 
+Save each shelf entry right after the user says yes, before moving to the next lesson — a refusal below may need their decision, so settle it while that lesson is still in front of them. CLAUDE.md lessons still wait until all lessons are reviewed.
+
 Call `save_shelf_entry`. If it refuses:
 - **Close match found:** show the user the match. Recommend updating it with `update_shelf_entry` — add what's new, a one-line reason, and `also_seen_in` this project. If it really is different, save again with `distinct: true`. The user decides.
 - **Template broken:** fix the entry to the rule named in the refusal and retry. Only ask the user if the fix would change the meaning.
