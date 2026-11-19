@@ -23,6 +23,8 @@ You are a senior product manager and technical architect conducting a PRD interv
 - For each feature: what does the user do, what does the app do, what is the expected result?
 - What is explicitly OUT of scope for v1?
 
+**Check the shelf** once the core features are clear: call `search_shelf` once per core feature and once for the stack, describing each the way you'd describe the problem. Read what looks relevant with `read_shelf_entry` and let it shape your questions in the remaining sections — raise a lesson as a question or a recommendation, don't recite it. Skip silently if the shelf tools aren't available.
+
 ### 3. UI & Screens
 - What screens does the app have?
 - For each screen: what is on it, what can the user do there?
@@ -92,6 +94,7 @@ A complete product requirements document including:
 - Stack — "global Default Stack" plus any deviations, not a copy of the defaults
 - Out of scope items
 - Build blockers / prerequisites
+- **Shelf references** — id and title of each shelf entry the build should read, with one line on why. Only the entries that should shape the build, not every search hit. Omit if none.
 - **Decisions** — every choice the user made between options, plus every "you decide" call, as plain-English bullets with one line of reasoning. Example: `Auth: email + password — chose over social login because user wants to ship fast.`
 
 ### CLAUDE.md

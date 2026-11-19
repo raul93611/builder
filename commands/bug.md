@@ -31,6 +31,7 @@ Cover these in order, but skip any the user has already answered:
 
 Before showing the summary, investigate the codebase so the bug file ships with a real fix plan, not just symptoms.
 
+- Search the shelf: call `search_shelf` with the symptom in plain words and the area it's in. A matching lesson may name the cause outright — cite its id in the bug file's Investigation section, next to the suspected root cause. Skip silently if the shelf tools aren't available.
 - Trace the reported flow through the code — routes, components, queries, and any logic involved in the steps to reproduce.
 - Check `git log` for recent commits touching the affected area, especially if the user said the bug started after a specific change.
 - Form a hypothesis about the root cause, with concrete file and line references.
