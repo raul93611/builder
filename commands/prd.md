@@ -94,6 +94,7 @@ A complete product requirements document including:
 - Stack — "global Default Stack" plus any deviations, not a copy of the defaults
 - Out of scope items
 - Build blockers / prerequisites
+- **Shelf references** — id and title of each shelf entry the build should read, with one line on why. Only the entries that should shape the build, not every search hit. Omit if none.
 - **Decisions** — every choice the user made between options, plus every "you decide" call, as plain-English bullets with one line of reasoning. Example: `Auth: email + password — chose over social login because user wants to ship fast.`
 
 ### CLAUDE.md
