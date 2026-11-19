@@ -12,8 +12,9 @@ Stack, scripts, local dev and deploy conventions are in the global `~/.claude/CL
 
 1. Read `CLAUDE.md` — this is your technical context.
 2. Read every file in `features/` and `bugs/` with status `planned` — these are the specs for this build. If none are planned and this is not a first build, stop and tell the user there is nothing to build.
-3. Verify each spec's blockers are resolved — credentials for any new external service it names. If any are missing, stop and tell the user what is needed before proceeding.
-4. Ask the user (optional, one prompt only): "Do you have a Claude Design handoff for this build? Paste the full handoff snippet now, or press enter to skip."
+3. Check the shelf: read every entry listed under "Shelf references" in the specs (and in `PRD.md` on a first build) with `read_shelf_entry`, then call `search_shelf` once per spec describing what it builds or fixes, and read anything new that applies. Treat entries as advice from past builds — the spec wins if they conflict. Skip silently if the shelf tools aren't available.
+4. Verify each spec's blockers are resolved — credentials for any new external service it names. If any are missing, stop and tell the user what is needed before proceeding.
+5. Ask the user (optional, one prompt only): "Do you have a Claude Design handoff for this build? Paste the full handoff snippet now, or press enter to skip."
    - **If skipped:** proceed normally — UI is built from the screen descriptions in the specs.
    - **If pasted:** treat the snippet as authoritative for visual design. Follow its instructions to fetch the linked bundle, read its README, and inspect the file referenced on the `Implement:` line. The Claude Design URL points to a bundle that exceeds the WebFetch size cap (~10 MB), so when WebFetch fails with a size error, fall back to `curl` via Bash to download the README and the implement-target file to a temp directory, then read them with the Read tool.
    - **Rule when a spec and the Claude Design handoff disagree on visual details:** the spec owns *what screens exist and what they do*; Claude Design owns *how they look*. Defer to the design bundle for layout, spacing, typography, and color application; defer to the spec for logic and flow.
@@ -89,7 +90,7 @@ Follow this order strictly.
 
 ### 4. UI Standards
 
-If a Claude Design handoff was provided in step 4 of Before Starting, it takes precedence over the specs and the defaults below for **visual** decisions — component layout, spacing, typography, color application, micro-interactions. Use the rules below as fallbacks for anything the design bundle does not specify.
+If a Claude Design handoff was provided in step 5 of Before Starting, it takes precedence over the specs and the defaults below for **visual** decisions — component layout, spacing, typography, color application, micro-interactions. Use the rules below as fallbacks for anything the design bundle does not specify.
 
 - Build the UI changes each spec describes, inside the app's existing navigation.
 - **First build only:** build the screen inventory and navigation structure from `PRD.md`, and apply its brand colors to the shadcn theme (CSS variables in `globals.css`).
