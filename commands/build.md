@@ -170,3 +170,7 @@ When something is completely missing from the specs and it blocks progress:
 - Stop
 - Tell the user exactly what information is needed
 - Do not guess on things that affect data model or core user flows
+
+Using the shelf:
+- Stuck on an error or behaviour that makes no sense? Search the shelf with the symptom before trial and error.
+- Never save to the shelf during a build — `/learn` does that afterwards, with the user's approval.
