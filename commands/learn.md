@@ -32,7 +32,7 @@ Also look for **approaches**: how a feature was built that a future project coul
 - **Shelf** — the detailed version: the situation, what we did, why, when it applies. Every approach goes here.
 - **Both** — a one-line rule in CLAUDE.md plus the detailed shelf entry.
 
-If the shelf tools aren't available in this session, skip the shelf and save to CLAUDE.md only.
+If the shelf tools aren't available in this session, save lessons to CLAUDE.md only and skip approaches — they're too detailed for the global file. Tell the user which ones were skipped.
 
 ## Process
 
@@ -77,6 +77,8 @@ Format each entry as:
 ```
 - [YYYY-MM-DD] Lesson summary in one or two sentences.
 ```
+
+For a lesson that went to both, end the bullet with its shelf entry's id — e.g. `(shelf #12)` — so every session knows the detail exists and where to find it. Keep the id when merging or replacing an entry.
 
 **Keep the global file lean — it loads into context at the start of every session, in every project, so its size costs performance on every request.** Do not blindly append:
 
